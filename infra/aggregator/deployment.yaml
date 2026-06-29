@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator
+  labels:
+    app: aggregator
+spec:
+  replicas: 1 # Scale up or down to mock multiple producers
+  selector:
+    matchLabels:
+      app: aggregator
+  template:
+    metadata:
+      labels:
+        app: aggregator
+    spec:
+      containers:
+      - name: aggregator
+        image: aggregator:local # Matches the image you build locally
+        imagePullPolicy: Never    # Crucial: Tells K8s to look inside Minikube's local cache
+        env:
+        - name: AMQP_URL
+          value: "amqp://rabbitmq-service:5672/%2f"
+        - name: RUST_LOG
+          value: "info"

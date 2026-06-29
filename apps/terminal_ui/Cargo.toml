@@ -1,0 +1,22 @@
+[package]
+name = "terminal_ui"
+version = "0.1.0"
+description = "terminal ui for logistic moniu"
+authors = ["michdol <michal.dolbniak@gmail.com>"]
+license = "MIT"
+edition = "2024"
+
+[dependencies]
+shared_models = { path = "../shared_models" }
+
+anyhow = "1.0.103"
+color-eyre = "0.6.3"
+crossterm = "0.29.0"
+ratatui = "0.30.0"
+
+# Read the optimization guideline for more details: https://ratatui.rs/recipes/apps/release-your-app/#optimizations
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
