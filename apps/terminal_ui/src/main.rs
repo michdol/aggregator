@@ -6,7 +6,7 @@ use ratatui::Terminal;
 use ratatui::backend::CrosstermBackend;
 use tokio::sync::mpsc;
 
-use shared_models::RabbitMq;
+use shared_models::rabbitmq::RabbitMq;
 
 use app::App;
 use events::{Event, EventHandler};

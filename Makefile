@@ -9,10 +9,10 @@ kill-a:
 	kubectl delete deploy aggregator
 # maybe need to remove old image or somehow override old one
 load:
-	minikube image load iot-producer:local
+	minikube image load iot-producer:local --overwrite
 
 load-a:
-	minikube image load aggregator:local
+	minikube image load aggregator:local --overwrite
 
 clear-img-a:
 	minikube image rm aggregator:local
@@ -27,4 +27,7 @@ rebuild-p: build-producer load restart
 rebuild-a: build-aggregator kill-a clear-img-a load-a restart-a
 deploy-agg:
 	kubectl apply -f ./infra/aggregator/deployment.yaml
-deploy-a: build-aggregator clear-img-a load-a deploy-agg
+
+deploy-a: build-aggregator load-a deploy-agg
+
+redeploy-a: build-aggregator load-a restart-a

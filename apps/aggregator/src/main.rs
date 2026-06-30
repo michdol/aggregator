@@ -1,7 +1,7 @@
 use aggregator::Aggregator;
 use futures_util::stream::StreamExt;
 use lapin::options::BasicAckOptions;
-use shared_models::{MeteorologicalPayload, RabbitMq, SensorData, redis_client::RedisClient};
+use shared_models::{SensorData, rabbitmq::RabbitMq, redis_client::RedisClient};
 
 mod aggregator;
 
