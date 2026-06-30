@@ -1,8 +1,9 @@
-use crate::SensorData;
+use crate::Message;
 use lapin::{
     BasicProperties, Channel, Connection, ConnectionProperties, Consumer, Result as LapinResult,
     options::*, types::FieldTable,
 };
+use log::info;
 
 #[derive(Debug)]
 pub struct RabbitMq {
@@ -15,6 +16,7 @@ impl RabbitMq {
         let connection = Connection::connect(amqp_url, ConnectionProperties::default())
             .await
             .expect("Failed to connect to rabbit {}");
+        info!("Connected to RabbitMq...✅");
 
         let channel = connection
             .create_channel()
@@ -36,7 +38,7 @@ impl RabbitMq {
         })
     }
 
-    pub async fn publish(&self, payload: &SensorData) {
+    pub async fn publish(&self, payload: &Message) {
         let msg = serde_json::to_string(payload).unwrap();
         self.channel
             .basic_publish(

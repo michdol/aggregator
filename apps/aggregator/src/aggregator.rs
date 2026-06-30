@@ -1,31 +1,26 @@
-use shared_models::SensorData;
+use log::error;
+use shared_models::Message;
 use shared_models::redis_client::RedisClient;
-use std::collections::HashMap;
+
 pub struct Aggregator {
-    sensors: HashMap<String, HashMap<String, f32>>,
     redis: RedisClient,
 }
 
 impl Aggregator {
     pub fn new(redis: RedisClient) -> Self {
-        Self {
-            sensors: HashMap::new(),
-            redis: redis,
-        }
+        Self { redis: redis }
     }
-    pub async fn aggregate(&mut self, data: &SensorData) {
-        println!("{}", data.payload.wind_speed_ms);
-        let mut hash: HashMap<String, f32> = HashMap::new();
-        hash.insert(String::from("wind_speed"), data.payload.wind_speed_ms);
-        self.sensors.insert(data.id.clone(), hash);
-        println!("calling redis client");
+    pub async fn aggregate(&mut self, message: &Message) {
         match self
             .redis
-            .set(data.id.clone(), data.payload.wind_speed_ms.to_string())
+            .set(
+                message.payload.id.clone(),
+                serde_json::to_string(message).unwrap(),
+            )
             .await
         {
             Ok(_) => (),
-            Err(err) => panic!("fuck this should be handled {:?}", err),
+            Err(err) => error!("⚠️ Error setting key {}: {:?}", message.payload.id, err),
         }
     }
 }
