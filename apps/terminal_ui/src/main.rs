@@ -70,9 +70,6 @@ async fn main() -> Result<()> {
             Event::Mouse(_) => {}
             Event::Resize(_, _) => {}
         };
-        // TODO: this probably blocks for too long
-        // using a channel will fix this?
-        // app.read_from_receiver().await;
     }
     tui.exit()?;
     Ok(())

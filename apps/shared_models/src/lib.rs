@@ -4,6 +4,8 @@ use lapin::{
 };
 use serde::{Deserialize, Serialize};
 
+pub mod redis_client;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SensorData {
     pub id: String,

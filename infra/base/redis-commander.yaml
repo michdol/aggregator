@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-commander
+  labels:
+    app: redis-commander
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-commander
+  template:
+    metadata:
+      labels:
+        app: redis-commander
+    spec:
+      containers:
+      - name: redis-commander
+        image: rediscommander/redis-commander:latest
+        env:
+        - name: REDIS_HOSTS
+          value: "local:redis-service:6379" # Automatically links to your Redis service
+        ports:
+        - containerPort: 8081
+          name: web-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-commander-service
+spec:
+  selector:
+    app: redis-commander
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
