@@ -11,8 +11,11 @@ shared_models = { path = "../shared_models" }
 
 anyhow = "1.0.103"
 color-eyre = "0.6.3"
+lapin = "4.10"
+futures-util = "0.3"
 crossterm = "0.29.0"
 ratatui = "0.30.0"
+tokio = { version = "1.38", features = ["full"] }
 
 # Read the optimization guideline for more details: https://ratatui.rs/recipes/apps/release-your-app/#optimizations
 [profile.release]

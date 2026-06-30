@@ -5,7 +5,7 @@ metadata:
   labels:
     app: iot-producer
 spec:
-  replicas: 2 # Scale up or down to mock multiple producers
+  replicas: 2
   selector:
     matchLabels:
       app: iot-producer
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: iot-producer
-        image: iot-producer:local # Matches the image you build locally
+        image: iot-producer:local
         imagePullPolicy: Never    # Crucial: Tells K8s to look inside Minikube's local cache
         env:
         - name: AMQP_URL

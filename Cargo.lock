@@ -3067,8 +3067,11 @@ dependencies = [
  "anyhow",
  "color-eyre",
  "crossterm",
+ "futures-util",
+ "lapin",
  "ratatui",
  "shared_models",
+ "tokio",
 ]
 
 [[package]]

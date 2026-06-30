@@ -1,5 +1,6 @@
 /*
-* k port-forward service/rabbitmq-service 15672:15672
+* kubectl port-forward service/rabbitmq-service 15672:15672
+* kubectl port-forward service/rabbitmq-service 5672:5672
 *
 */
 
@@ -12,7 +13,7 @@ use shared_models::{MeteorologicalPayload, RabbitMq, SensorData};
 #[tokio::main]
 async fn main() {
     let amqp_url = "amqp://rabbitmq-service:5672/%2f";
-    let queue_name = "weather_telemetry";
+    let queue_name = "trucks";
     let rabbit = match RabbitMq::new(amqp_url, queue_name).await {
         Ok(instance) => instance,
         Err(err) => {
