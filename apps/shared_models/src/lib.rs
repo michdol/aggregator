@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+pub mod postgresql;
 pub mod rabbitmq;
 pub mod redis_client;
 

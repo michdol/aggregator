@@ -19,3 +19,4 @@ dotenvy = "0.15"
 
 metrics = "0.24"
 metrics-exporter-prometheus = "0.16"
+sqlx = { version = "0.7", features = ["postgres", "runtime-tokio", "chrono"] }
