@@ -5,7 +5,7 @@ metadata:
   labels:
     app: iot-producer
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: iot-producer
@@ -17,7 +17,7 @@ spec:
       containers:
       - name: iot-producer
         image: iot-producer:local
-        imagePullPolicy: Never    # Crucial: Tells K8s to look inside Minikube's local cache
+        imagePullPolicy: Never
         env:
         - name: AMQP_URL
           value: "amqp://rabbitmq-service:5672/%2f"

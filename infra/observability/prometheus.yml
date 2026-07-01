@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 1s
+
+scrape_configs:
+  - job_name: 'producer'
+    static_configs:
+      - targets: ['host.docker.internal:9000']
+  - job_name: 'aggregator'
+    static_configs:
+      - targets: ['host.docker.internal:9001']

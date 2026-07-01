@@ -4,14 +4,22 @@ use log;
 use shared_models::{
     Degrees, EARTH_RADIUS, GpsData, Message, Meters, Radians, Sensor, Vehicle, rabbitmq::RabbitMq,
 };
-use std::env;
+use std::{
+    env, thread,
+    time::{Duration, Instant},
+};
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
     log::info!("Starting producer ⚠️");
     dotenv().ok();
+    let rate: u64 = env::var("RATE").expect("RATE must be set").parse().unwrap();
     let rabbitmq_url: String = env::var("RABBITMQ_URL").expect("RABBITMQ_URL must be set");
     let queue_name: String = env::var("QUEUE_NAME").expect("QUEUE_NAME must be set");
+    metrics_exporter_prometheus::PrometheusBuilder::new()
+        .with_http_listener(([127, 0, 0, 1], 9000))
+        .install();
     let rabbit = match RabbitMq::new(&rabbitmq_url, &queue_name).await {
         Ok(instance) => instance,
         Err(err) => {
@@ -35,7 +43,9 @@ async fn main() {
         },
     };
     log::info!("Starting sending messages");
+    let sleep_duration = Duration::from_millis(1000 / rate);
     loop {
+        let start = Instant::now();
         let (new_lat, new_lon) = generate_new_coordinates(
             message.payload.gps.latitude,
             message.payload.gps.longitude,
@@ -45,7 +55,11 @@ async fn main() {
         );
         message.payload.gps.latitude = new_lat;
         message.payload.gps.longitude = new_lon;
+        message.timestamp = Utc::now();
         rabbit.publish(&message).await;
+        thread::sleep(sleep_duration);
+        let duration = start.elapsed();
+        metrics::histogram!("producer_write_duration").record(duration.as_secs_f64());
     }
 }
 

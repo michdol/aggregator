@@ -4,7 +4,7 @@ use futures_util::stream::StreamExt;
 use lapin::options::BasicAckOptions;
 use log::{error, info};
 use shared_models::{Message, rabbitmq::RabbitMq, redis_client::RedisClient};
-use std::env;
+use std::{env, time::Instant};
 
 mod aggregator;
 
@@ -15,6 +15,9 @@ async fn main() {
     dotenv().ok();
     let redis_url: String = env::var("REDIS_URL").expect("REDIS_URL must be set");
     let rabbitmq_url: String = env::var("RABBITMQ_URL").expect("RABBITMQ_URL must be set");
+    let _ = metrics_exporter_prometheus::PrometheusBuilder::new()
+        .with_http_listener(([127, 0, 0, 1], 9001))
+        .install();
 
     let redis_client = RedisClient::new(String::from(redis_url)).await;
     info!("Redis client up and running...✅");
@@ -32,6 +35,7 @@ async fn main() {
     if let Ok(mut consumer) = rabbit.get_consumer().await {
         info!("Listening for messages from consumer...🚧");
         while let Some(message) = consumer.next().await {
+            let start = Instant::now();
             if let Ok(message) = message {
                 match serde_json::from_slice::<Message>(&message.data) {
                     Ok(model) => {
@@ -43,6 +47,8 @@ async fn main() {
                     error!("⚠️ Error acking message: {:?}", e)
                 }
             }
+            metrics::histogram!("aggregator_aggregation_duration")
+                .record(start.elapsed().as_secs_f64());
         }
     }
     info!("Exiting...🎉");
