@@ -1,26 +1,31 @@
 use chrono::Utc;
+use dotenvy::dotenv;
+use log;
 use shared_models::{
     Degrees, EARTH_RADIUS, GpsData, Message, Meters, Radians, Sensor, Vehicle, rabbitmq::RabbitMq,
 };
+use std::env;
 
 #[tokio::main]
 async fn main() {
-    println!("Starting producer");
-    let amqp_url = "amqp://rabbitmq-service:5672/%2f";
-    let queue_name = "trucks";
-    let rabbit = match RabbitMq::new(amqp_url, queue_name).await {
+    log::info!("Starting producer ⚠️");
+    dotenv().ok();
+    let rabbitmq_url: String = env::var("RABBITMQ_URL").expect("RABBITMQ_URL must be set");
+    let queue_name: String = env::var("QUEUE_NAME").expect("QUEUE_NAME must be set");
+    let rabbit = match RabbitMq::new(&rabbitmq_url, &queue_name).await {
         Ok(instance) => instance,
         Err(err) => {
             panic!("failed connecting to rabbit {}", err);
         }
     };
+    log::info!("Got RabbitMq...✅");
     let mut message: Message = Message {
         timestamp: Utc::now(),
         sensor: Sensor {
-            id: String::from("test_id"),
+            id: String::from("00000000-b54f-4ac9-9cda-68fe41410ce2"),
         },
         payload: Vehicle {
-            id: String::from("vehicle_id"),
+            id: String::from("11111111-b54f-4ac9-9cda-68fe41410ce2"),
             gps: GpsData {
                 latitude: 52.00882034091296,
                 longitude: 17.0333332,
@@ -29,6 +34,7 @@ async fn main() {
             },
         },
     };
+    log::info!("Starting sending messages");
     loop {
         let (new_lat, new_lon) = generate_new_coordinates(
             message.payload.gps.latitude,

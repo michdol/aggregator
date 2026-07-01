@@ -1625,8 +1625,11 @@ name = "iot_producer"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "dotenvy",
+ "env_logger",
  "futures-util",
  "lapin",
+ "log",
  "rand 0.8.6",
  "rand_distr",
  "serde",

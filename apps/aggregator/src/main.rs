@@ -15,9 +15,11 @@ async fn main() {
     dotenv().ok();
     let redis_url: String = env::var("REDIS_URL").expect("REDIS_URL must be set");
     let rabbitmq_url: String = env::var("RABBITMQ_URL").expect("RABBITMQ_URL must be set");
+
     let redis_client = RedisClient::new(String::from(redis_url)).await;
     info!("Redis client up and running...✅");
     let mut agg = Aggregator::new(redis_client);
+
     let rabbit = match RabbitMq::new(&rabbitmq_url, "trucks").await {
         Ok(instance) => instance,
         Err(err) => {
