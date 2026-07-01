@@ -2,7 +2,6 @@
 members = [
 	"apps/aggregator",
 	"apps/iot_producer",
-	"apps/producer",
 	"apps/shared_models",
 	"apps/terminal_ui",
 ]

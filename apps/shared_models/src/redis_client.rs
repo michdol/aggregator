@@ -26,9 +26,7 @@ impl RedisClient {
 
     pub async fn set(&self, key: String, value: String) -> redis::RedisResult<()> {
         let mut con = self.connection.clone();
-        println!("setting");
         tokio::spawn(async move {
-            println!("setting inside tokio thread");
             let _: Result<(), redis::RedisError> = con.set(key, value).await;
         });
         Ok(())

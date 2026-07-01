@@ -5,7 +5,7 @@ ARG APP_NAME
 WORKDIR /app
 
 COPY . /app
-RUN cargo build --locked --release && cp ./target/release/$APP_NAME /bin/server
+RUN cargo build --locked --release --package aggregator && cp ./target/release/$APP_NAME /bin/server
 
 FROM debian:bullseye-slim AS final
 

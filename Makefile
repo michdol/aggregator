@@ -3,11 +3,16 @@ build-producer:
 	docker build -t iot-producer:local -f apps/iot_producer/Dockerfile .
 
 build-aggregator:
-	docker build -t aggregator:local -f apps/aggregator/Dockerfile .
+	docker build -t aggregator:latest -f apps/aggregator/Dockerfile .
 
 kill-a:
 	kubectl delete deploy aggregator
-# maybe need to remove old image or somehow override old one
+
+delete-img:
+	minikube image rm iot-producer:local
+
+delete-img-a:
+	minikube image rm aggregator:local
 load:
 	minikube image load iot-producer:local --overwrite
 
@@ -22,12 +27,16 @@ restart:
 restart-a:
 	kubectl rollout restart deployment/aggregator
 
-rebuild-p: build-producer load restart
+rebuild-p: build-producer delete-img load restart
 
-rebuild-a: build-aggregator kill-a clear-img-a load-a restart-a
+rebuild-a: build-aggregator clear-img-a load-a restart-a
+
 deploy-agg:
 	kubectl apply -f ./infra/aggregator/deployment.yaml
 
-deploy-a: build-aggregator load-a deploy-agg
+deploy-a: build-aggregator delete-img-a load-a deploy-agg
 
 redeploy-a: build-aggregator load-a restart-a
+
+wait-for-termination:
+	kubectl wait --for=delete deployment/aggregator --timeout=60s

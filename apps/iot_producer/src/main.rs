@@ -5,6 +5,7 @@ use shared_models::{
 
 #[tokio::main]
 async fn main() {
+    println!("Starting producer");
     let amqp_url = "amqp://rabbitmq-service:5672/%2f";
     let queue_name = "trucks";
     let rabbit = match RabbitMq::new(amqp_url, queue_name).await {
@@ -38,7 +39,7 @@ async fn main() {
         );
         message.payload.gps.latitude = new_lat;
         message.payload.gps.longitude = new_lon;
-        rabbit.publish(&message).await
+        rabbit.publish(&message).await;
     }
 }
 
