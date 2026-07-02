@@ -19,7 +19,7 @@ pub struct Sensor {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Vehicle {
-    pub id: String,
+    pub id: u64,
     pub gps: GpsData,
 }
 

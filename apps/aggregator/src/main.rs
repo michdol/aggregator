@@ -25,6 +25,7 @@ async fn main() {
 
     let pool = PgPool::connect(&postgres_url).await.unwrap();
     let postgres_client = PostgresClient::new(pool);
+    info!("Postgresql client up and running...✅");
     let redis_client = RedisClient::new(String::from(redis_url)).await;
     info!("Redis client up and running...✅");
     let mut agg = Aggregator::new(postgres_client, redis_client);
