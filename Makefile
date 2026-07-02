@@ -1,3 +1,4 @@
+.PHONY: port-forward
 # From root dir
 build-producer:
 	docker build -t iot-producer:local -f apps/iot_producer/Dockerfile .
@@ -40,3 +41,14 @@ redeploy-a: build-aggregator load-a restart-a
 
 wait-for-termination:
 	kubectl wait --for=delete deployment/aggregator --timeout=60s
+
+ports:
+	@echo "Starting Kubernetes port-forwards..."
+	@kubectl port-forward service/rabbitmq-service 15672:15672 & \
+	 kubectl port-forward service/rabbitmq-service 5672:5672 & \
+	 kubectl port-forward service/redis-commander-service 8081:8081 & \
+	 kubectl port-forward service/redis-service 6379:6379 & \
+	 kubectl port-forward service/postgres-service 5432:5432 & \
+	 echo "All port-forwards running in background. Press Ctrl+C to stop all." && \
+	 trap 'kill 0' INT; \
+	 while true; do sleep 1; done
